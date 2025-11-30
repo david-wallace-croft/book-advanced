@@ -1,0 +1,20 @@
+# Book Advanced
+
+[![MIT licensed][mit-badge]][mit-url]
+
+[mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[mit-url]: https://github.com/david-wallace-croft/book-advanced/blob/main/LICENSE.txt
+
+- Code adapted from the book "Advanced Hands-on Rust" by Herbert Wolverson
+  - [https://pragprog.com/titles/hwmrust/advanced-hands-on-rust/](
+     https://pragprog.com/titles/hwmrust/advanced-hands-on-rust/)
+  - [https://devtalk.com/books/advanced-hands-on-rust/](
+     https://devtalk.com/books/advanced-hands-on-rust/)
+
+## Usage
+
+- cargo run
+
+## History
+
+- 2025-11-30: Initial release
