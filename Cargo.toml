@@ -18,4 +18,7 @@ version = "0.0.0-SNAPSHOT"
 debug = "line-tables-only"
 
 [workspace]
-members = ["hello"]
+members = ["bevy-hello", "hello"]
+
+[workspace.dependencies]
+bevy = "0.17.3"
