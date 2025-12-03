@@ -7,6 +7,3 @@ version = "0.0.0-SNAPSHOT"
 
 [dependencies]
 bevy = { workspace = true }
-
-[profile.dev]
-debug = "line-tables-only"
