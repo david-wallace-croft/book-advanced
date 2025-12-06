@@ -4,7 +4,7 @@ description = "Code adapted from the book 'Advanced Hands-On Rust' by Wolverson"
 edition = "2024"
 homepage = "https://www.CroftSoft.com/"
 license = "MIT"
-name = "book-advanced"
+name = "pig"
 publish = false
 readme = "README.md"
 repository = "https://github.com/david-wallace-croft/book-advanced"
@@ -12,14 +12,6 @@ rust-version = "1.91"
 version = "0.0.0-SNAPSHOT"
 
 [dependencies]
-# no dependencies
-
-[profile.dev]
-debug = "line-tables-only"
-
-[workspace]
-members = ["bevy-hello", "hello", "my-lib", "pig"]
-
-[workspace.dependencies]
-bevy = "0.17.3"
-bevy_egui = "0.38.0"
+bevy = { workspace = true }
+bevy_egui = { workspace = true }
+my-lib = { path = "../my-lib" }
