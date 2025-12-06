@@ -13,6 +13,7 @@
 
 ## Usage
 
+- cargo test --all
 - cargo run -p bevy-hello
 - cargo run -p pig
 

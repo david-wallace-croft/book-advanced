@@ -1,4 +1,6 @@
 use ::rand::SeedableRng;
+use ::rand::distr::Distribution;
+use ::rand::distr::StandardUniform;
 use ::rand::prelude::*;
 use ::std::ops::Range;
 
@@ -7,6 +9,13 @@ pub struct RandomNumberGenerator {
 }
 
 impl RandomNumberGenerator {
+  pub fn next<T>(&mut self) -> T
+  where
+    StandardUniform: Distribution<T>,
+  {
+    self.rng.random()
+  }
+
   pub fn range(
     &mut self,
     range: Range<u32>,
@@ -32,6 +41,15 @@ impl Default for RandomNumberGenerator {
 #[cfg(test)]
 mod test {
   use super::*;
+
+  #[test]
+  fn test_next_types() {
+    let mut rng: RandomNumberGenerator = Default::default();
+
+    let _: i32 = rng.next();
+
+    let _ = rng.next::<f32>();
+  }
 
   #[test]
   fn test_range_bounds() {
