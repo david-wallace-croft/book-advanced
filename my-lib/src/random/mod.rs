@@ -1,9 +1,9 @@
 use ::rand::SeedableRng;
 use ::rand::distr::Distribution;
 use ::rand::distr::StandardUniform;
+use ::rand::distr::uniform::SampleRange;
 use ::rand::distr::uniform::SampleUniform;
 use ::rand::prelude::*;
-use ::std::ops::Range;
 
 pub struct RandomNumberGenerator {
   rng: StdRng,
@@ -19,7 +19,7 @@ impl RandomNumberGenerator {
 
   pub fn range<T>(
     &mut self,
-    range: Range<T>,
+    range: impl SampleRange<T>,
   ) -> T
   where
     T: PartialOrd + SampleUniform,
