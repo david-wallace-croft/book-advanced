@@ -1,12 +1,27 @@
+use ::rand::Rng;
 use ::rand::SeedableRng;
 use ::rand::distr::Distribution;
 use ::rand::distr::StandardUniform;
 use ::rand::distr::uniform::SampleRange;
 use ::rand::distr::uniform::SampleUniform;
-use ::rand::prelude::*;
 
+#[cfg(
+  all(
+    not(feature = "pcg"),
+    not(feature = "xorshift")
+  )
+)]
+type RngCore = ::rand::prelude::StdRng;
+
+#[cfg(feature = "pcg")]
+type RngCore = ::rand_pcg::Pcg64Mcg;
+
+#[cfg(feature = "xorshift")]
+type RngCore = ::rand_xorshift::XorShiftRng;
+
+// TODO: #[derive(Resource)]
 pub struct RandomNumberGenerator {
-  rng: StdRng,
+  rng: RngCore,
 }
 
 impl RandomNumberGenerator {
@@ -29,7 +44,7 @@ impl RandomNumberGenerator {
 
   pub fn seeded(seed: u64) -> Self {
     Self {
-      rng: StdRng::seed_from_u64(seed),
+      rng: RngCore::seed_from_u64(seed),
     }
   }
 }
@@ -37,7 +52,7 @@ impl RandomNumberGenerator {
 impl Default for RandomNumberGenerator {
   fn default() -> Self {
     Self {
-      rng: StdRng::from_os_rng(),
+      rng: RngCore::from_os_rng(),
     }
   }
 }
