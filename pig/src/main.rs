@@ -2,11 +2,11 @@ use self::game_assets::GameAssets;
 use self::game_phase::GamePhase;
 use self::hand_die::HandDie;
 use self::hand_timer::HandTimer;
-use self::random::Random;
 use self::scores::Scores;
 use ::bevy::prelude::*;
 use ::bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass, egui};
 use ::my_lib::RandomNumberGenerator;
+use ::my_lib::RandomPlugin;
 
 mod game_assets;
 mod game_phase;
@@ -19,6 +19,7 @@ fn main() {
   App::new()
     .add_plugins(DefaultPlugins)
     .add_plugins(EguiPlugin::default())
+    .add_plugins(RandomPlugin)
     .add_systems(Startup, setup)
     .add_systems(EguiPrimaryContextPass, display_score)
     .init_state::<GamePhase>()
@@ -43,7 +44,7 @@ fn cpu(
   hand_query: Query<(Entity, &Sprite), With<HandDie>>,
   mut state: ResMut<NextState<GamePhase>>,
   mut scores: ResMut<Scores>,
-  mut rng: ResMut<Random>,
+  mut rng: ResMut<RandomNumberGenerator>,
   mut commands: Commands,
   assets: Res<GameAssets>,
   mut timer: ResMut<HandTimer>,
@@ -58,7 +59,7 @@ fn cpu(
       .sum();
 
     if hand_total < 20 && scores.cpu + hand_total < 100 {
-      let new_roll: u32 = rng.0.range(1..7);
+      let new_roll: u32 = rng.range(1..7);
 
       if new_roll == 1 {
         clear_die(&hand_query, &mut commands);
@@ -104,7 +105,7 @@ fn display_score(
 fn player(
   hand_query: Query<(Entity, &Sprite), With<HandDie>>,
   mut commands: Commands,
-  mut rng: ResMut<Random>,
+  mut rng: ResMut<RandomNumberGenerator>,
   assets: Res<GameAssets>,
   mut scores: ResMut<Scores>,
   mut state: ResMut<NextState<GamePhase>>,
@@ -121,7 +122,7 @@ fn player(
       ui.label(&format!("Score for this hand: {hand_score}"));
 
       if ui.button("Roll Dice").clicked() {
-        let new_roll: usize = rng.0.range(1..=6);
+        let new_roll: usize = rng.range(1..=6);
 
         if new_roll == 1 {
           clear_die(&hand_query, &mut commands);
@@ -174,8 +175,6 @@ fn setup(
     cpu: 0,
     player: 0,
   });
-
-  commands.insert_resource(Random(RandomNumberGenerator::default()));
 
   commands
     .insert_resource(HandTimer(Timer::from_seconds(0.5, TimerMode::Repeating)))

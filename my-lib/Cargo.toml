@@ -16,6 +16,7 @@ name = "random"
 harness = false
 
 [dependencies]
+bevy = { workspace = true }
 rand = { workspace = true }
 rand_pcg = { workspace = true, optional = true }
 rand_xorshift = { workspace = true, optional = true }

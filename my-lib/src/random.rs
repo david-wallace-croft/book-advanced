@@ -1,3 +1,4 @@
+use ::bevy::prelude::*;
 use ::rand::Rng;
 use ::rand::SeedableRng;
 use ::rand::distr::Distribution;
@@ -19,7 +20,7 @@ type RngCore = ::rand_pcg::Pcg64Mcg;
 #[cfg(feature = "xorshift")]
 type RngCore = ::rand_xorshift::XorShiftRng;
 
-// TODO: #[derive(Resource)]
+#[derive(Resource)]
 pub struct RandomNumberGenerator {
   rng: RngCore,
 }
