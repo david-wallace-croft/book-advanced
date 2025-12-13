@@ -26,5 +26,6 @@ criterion = { version = "0.8.1", features = ["html_reports"] }
 
 [features]
 default = ["pcg"]
+locking = []
 pcg = ["rand_pcg"]
 xorshift = ["rand_xorshift"]

@@ -5,7 +5,7 @@ use self::hand_timer::HandTimer;
 use self::scores::Scores;
 use ::bevy::prelude::*;
 use ::bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass, egui};
-use ::my_lib::random_locking::RandomNumberGenerator;
+use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
 
 mod game_assets;

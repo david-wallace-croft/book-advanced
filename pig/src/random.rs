@@ -1,7 +1,7 @@
 #![expect(dead_code)]
 
 use ::bevy::prelude::*;
-use ::my_lib::random_locking::RandomNumberGenerator;
+use ::my_lib::random::RandomNumberGenerator;
 
 #[derive(Resource)]
 pub struct Random(pub RandomNumberGenerator);
