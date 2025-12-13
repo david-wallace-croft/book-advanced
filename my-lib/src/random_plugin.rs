@@ -1,4 +1,4 @@
-use super::RandomNumberGenerator;
+use super::random_locking::RandomNumberGenerator;
 use ::bevy::prelude::*;
 
 pub struct RandomPlugin;

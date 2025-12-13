@@ -1,5 +1,5 @@
 use ::criterion::{Criterion, criterion_group, criterion_main};
-use ::my_lib::*;
+use ::my_lib::random::RandomNumberGenerator;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
   c.bench_function("random", |b| {

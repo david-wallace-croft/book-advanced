@@ -5,8 +5,8 @@ use self::hand_timer::HandTimer;
 use self::scores::Scores;
 use ::bevy::prelude::*;
 use ::bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass, egui};
-use ::my_lib::RandomNumberGenerator;
-use ::my_lib::RandomPlugin;
+use ::my_lib::random_locking::RandomNumberGenerator;
+use ::my_lib::random_plugin::RandomPlugin;
 
 mod game_assets;
 mod game_phase;
@@ -44,7 +44,7 @@ fn cpu(
   hand_query: Query<(Entity, &Sprite), With<HandDie>>,
   mut state: ResMut<NextState<GamePhase>>,
   mut scores: ResMut<Scores>,
-  mut rng: ResMut<RandomNumberGenerator>,
+  rng: Res<RandomNumberGenerator>,
   mut commands: Commands,
   assets: Res<GameAssets>,
   mut timer: ResMut<HandTimer>,
@@ -105,7 +105,7 @@ fn display_score(
 fn player(
   hand_query: Query<(Entity, &Sprite), With<HandDie>>,
   mut commands: Commands,
-  mut rng: ResMut<RandomNumberGenerator>,
+  rng: Res<RandomNumberGenerator>,
   assets: Res<GameAssets>,
   mut scores: ResMut<Scores>,
   mut state: ResMut<NextState<GamePhase>>,
