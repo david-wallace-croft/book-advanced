@@ -17,6 +17,7 @@
 - cargo run -p bevy-hello
 - cargo run -p pig
 - cargo bench -p my-lib
+- cargo run -p dragon
 
 ## Assets
 
