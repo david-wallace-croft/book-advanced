@@ -15,7 +15,7 @@ fn setup(
   mut commands: Commands,
   asset_server: Res<AssetServer>,
 ) {
-  commands.spawn(Camera2d::default());
+  commands.spawn(Camera2d);
 
   let dragon_image: Handle<Image> = asset_server.load("dragon.png");
 

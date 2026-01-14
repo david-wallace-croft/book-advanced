@@ -40,6 +40,7 @@ fn clear_die(
     .for_each(|(entity, _)| commands.entity(entity).despawn());
 }
 
+#[expect(clippy::too_many_arguments)]
 fn cpu(
   hand_query: Query<(Entity, &Sprite), With<HandDie>>,
   mut state: ResMut<NextState<GamePhase>>,
@@ -93,9 +94,9 @@ fn display_score(
   egui::Window::new("Total Scores").show(
     egui_context.ctx_mut()?,
     |ui: &mut egui::Ui| {
-      ui.label(&format!("Player: {}", scores.player));
+      ui.label(format!("Player: {}", scores.player));
 
-      ui.label(&format!("CPU: {}", scores.cpu));
+      ui.label(format!("CPU: {}", scores.cpu));
     },
   );
 
@@ -119,7 +120,7 @@ fn player(
         .map(|(_, ts)| ts.texture_atlas.as_ref().unwrap().index + 1)
         .sum();
 
-      ui.label(&format!("Score for this hand: {hand_score}"));
+      ui.label(format!("Score for this hand: {hand_score}"));
 
       if ui.button("Roll Dice").clicked() {
         let new_roll: usize = rng.range(1..=6);
@@ -156,7 +157,7 @@ fn setup(
   mut commands: Commands,
   mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-  commands.spawn(Camera2d::default());
+  commands.spawn(Camera2d);
 
   let texture: Handle<Image> = asset_server.load("die-faces.png");
 

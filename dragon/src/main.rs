@@ -93,10 +93,10 @@ fn flap(
   keyboard: Res<ButtonInput<KeyCode>>,
   mut query: Query<&mut Dragon>,
 ) {
-  if keyboard.pressed(KeyCode::Space) {
-    if let Ok(mut dragon) = query.single_mut() {
-      dragon.gravity = 5.0;
-    }
+  if keyboard.pressed(KeyCode::Space)
+    && let Ok(mut dragon) = query.single_mut()
+  {
+    dragon.gravity = 5.0;
   }
 }
 
@@ -129,7 +129,7 @@ fn move_walls(
   mut query: Query<&mut Transform, With<Obstacle>>,
   delete: Query<Entity, With<Obstacle>>,
   assets: Res<DragonAssets>,
-  mut rng: ResMut<RandomNumberGenerator>,
+  #[allow(unused_mut)] mut rng: ResMut<RandomNumberGenerator>,
 ) {
   let mut rebuild: bool = false;
 
@@ -157,14 +157,14 @@ fn move_walls(
 fn setup(
   mut commands: Commands,
   asset_server: Res<AssetServer>,
-  mut rng: ResMut<RandomNumberGenerator>,
+  #[allow(unused_mut)] mut rng: ResMut<RandomNumberGenerator>,
 ) {
   let assets: DragonAssets = DragonAssets {
     dragon: asset_server.load("dragon-52x45.png"),
     wall: asset_server.load("wall-32x32.png"),
   };
 
-  commands.spawn(Camera2d::default()).insert(DragonElement);
+  commands.spawn(Camera2d).insert(DragonElement);
 
   commands
     .spawn((
