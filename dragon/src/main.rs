@@ -96,13 +96,13 @@ fn flap(
   if keyboard.pressed(KeyCode::Space)
     && let Ok(mut dragon) = query.single_mut()
   {
-    dragon.gravity = 5.0;
+    dragon.gravity -= 0.16;
   }
 }
 
 fn gravity(mut query: Query<(&mut Dragon, &mut Transform)>) {
   if let Ok((mut dragon, mut transform)) = query.single_mut() {
-    dragon.gravity += 0.1;
+    dragon.gravity += 0.04;
 
     transform.translation.y -= dragon.gravity;
   }
