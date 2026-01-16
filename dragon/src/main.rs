@@ -14,6 +14,7 @@ mod dragon_assets;
 mod dragon_element;
 mod game_phase;
 mod game_state_plugin;
+mod menu_assets;
 mod obstacle;
 
 fn main() {
