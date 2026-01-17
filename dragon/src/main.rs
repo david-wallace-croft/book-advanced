@@ -12,9 +12,12 @@ use ::my_lib::random_plugin::RandomPlugin;
 mod dragon;
 mod dragon_assets;
 mod dragon_element;
+mod game_menus;
 mod game_phase;
 mod game_state_plugin;
 mod menu_assets;
+mod menu_element;
+mod menu_resource;
 mod obstacle;
 
 fn main() {
@@ -97,7 +100,7 @@ fn flap(
   if keyboard.pressed(KeyCode::Space)
     && let Ok(mut dragon) = query.single_mut()
   {
-    dragon.gravity -= 0.16;
+    dragon.gravity -= 0.24;
   }
 }
 
