@@ -25,7 +25,7 @@ fn main() {
 
   let primary_window: Option<Window> = Some(Window {
     resolution,
-    title: "Flappy Drag - Bevy Edition".to_string(),
+    title: "Flappy Dragon - Bevy Edition".to_string(),
     ..default()
   });
 
@@ -82,7 +82,7 @@ fn clamp(
   }
 }
 
-fn cleanup<T>(
+pub fn cleanup<T>(
   query: Query<Entity, With<T>>,
   mut commands: Commands,
 ) where
