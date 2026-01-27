@@ -39,6 +39,15 @@ where
       game_menus::run::<T>.run_if(in_state(self.menu_state)),
     );
 
+    app.add_systems(OnExit(self.menu_state), cleanup::<MenuElement>);
+
+    app.add_systems(OnEnter(self.game_end_state), game_menus::setup::<T>);
+
+    app.add_systems(
+      Update,
+      game_menus::run::<T>.run_if(in_state(self.game_end_state)),
+    );
+
     app.add_systems(OnExit(self.game_end_state), cleanup::<MenuElement>);
   }
 }
