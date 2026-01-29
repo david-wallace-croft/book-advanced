@@ -20,6 +20,29 @@ mod menu_element;
 mod menu_resource;
 mod obstacle;
 
+macro_rules! add_phase {
+  (
+    $app:expr, $type:ty, $phase:expr,
+    start => [ $($start:expr),* ],
+    run => [ $($run:expr),* ],
+    exit => [ $($exit:expr),* ]
+  ) => {
+    $($app.add_systems(
+      bevy::prelude::OnEnter::<$type>($phase),
+      $start);)*
+
+    $($app.add_systems(
+      bevy::prelude::Update,
+      $run.run_if(in_state($phase))
+    );)*
+
+    $($app.add_systems(
+      bevy::prelude::OnExit::<$type>($phase),
+      $exit
+    );)*
+  }
+}
+
 fn main() {
   let resolution: WindowResolution = WindowResolution::new(1024, 768);
 
@@ -34,7 +57,18 @@ fn main() {
     ..default()
   };
 
-  App::new()
+  let mut app: App = App::new();
+
+  add_phase!(
+    app,
+    GamePhase,
+    GamePhase::Flapping,
+    start => [ setup ],
+    run => [ gravity, flap, clamp, move_walls, hit_wall ],
+    exit => [ cleanup::<DragonElement> ]
+  );
+
+  app
     .add_plugins(DefaultPlugins.set(window_plugin))
     .add_plugins(RandomPlugin)
     .add_plugins(GameStatePlugin::<GamePhase> {
@@ -42,13 +76,6 @@ fn main() {
       game_start_state: GamePhase::Flapping,
       menu_state: GamePhase::MainMenu,
     })
-    .add_systems(OnEnter(GamePhase::Flapping), setup)
-    .add_systems(
-      Update,
-      (gravity, flap, clamp, move_walls, hit_wall)
-        .run_if(in_state(GamePhase::Flapping)),
-    )
-    .add_systems(OnExit(GamePhase::Flapping), cleanup::<DragonElement>)
     .run();
 }
 
