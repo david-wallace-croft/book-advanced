@@ -1,4 +1,5 @@
 use self::game_assets::GameAssets;
+use self::game_element::GameElement;
 use self::game_phase::GamePhase;
 use self::hand_die::HandDie;
 use self::hand_timer::HandTimer;
@@ -9,6 +10,7 @@ use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
 
 mod game_assets;
+mod game_element;
 mod game_phase;
 mod hand_die;
 mod hand_timer;
@@ -157,7 +159,7 @@ fn setup(
   mut commands: Commands,
   mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-  commands.spawn(Camera2d);
+  commands.spawn(Camera2d).insert(GameElement);
 
   let texture: Handle<Image> = asset_server.load("die-faces.png");
 
@@ -204,5 +206,6 @@ fn spawn_die(
     sprite,
     Transform::from_xyz(rolled_die - 400., 60., 1.),
     HandDie,
+    GameElement,
   ));
 }
