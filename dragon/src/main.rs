@@ -2,22 +2,18 @@ use self::dragon::Dragon;
 use self::dragon_assets::DragonAssets;
 use self::dragon_element::DragonElement;
 use self::game_phase::GamePhase;
-use self::game_state_plugin::GameStatePlugin;
 use self::obstacle::Obstacle;
 use ::bevy::prelude::*;
 use ::bevy::window::WindowResolution;
+use ::my_lib::cleanup;
+use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
 
 mod dragon;
 mod dragon_assets;
 mod dragon_element;
-mod game_menus;
 mod game_phase;
-mod game_state_plugin;
-mod menu_assets;
-mod menu_element;
-mod menu_resource;
 mod obstacle;
 
 macro_rules! add_phase {
@@ -107,17 +103,6 @@ fn clamp(
       state.set(GamePhase::GameOver)
     }
   }
-}
-
-pub fn cleanup<T>(
-  query: Query<Entity, With<T>>,
-  mut commands: Commands,
-) where
-  T: Component,
-{
-  query
-    .iter()
-    .for_each(|entity| commands.entity(entity).despawn());
 }
 
 fn flap(

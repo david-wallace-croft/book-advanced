@@ -51,7 +51,7 @@ pub fn setup<T>(
     } else if menu_resource.game_end_state == *current_state {
       menu_assets.game_over.clone()
     } else {
-      panic!("Unkown menu state");
+      panic!("Unknown menu state");
     }
   };
 
