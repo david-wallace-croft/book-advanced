@@ -1,3 +1,4 @@
+use self::final_score::FinalScore;
 use self::game_assets::GameAssets;
 use self::game_element::GameElement;
 use self::game_phase::GamePhase;
@@ -5,10 +6,14 @@ use self::hand_die::HandDie;
 use self::hand_timer::HandTimer;
 use self::scores::Scores;
 use ::bevy::prelude::*;
+use ::bevy::window::WindowResolution;
 use ::bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass, egui};
+use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
+use ::my_lib::{add_phase, cleanup};
 
+mod final_score;
 mod game_assets;
 mod game_element;
 mod game_phase;
@@ -18,19 +23,83 @@ mod random;
 mod scores;
 
 fn main() {
-  App::new()
-    .add_plugins(DefaultPlugins)
-    .add_plugins(EguiPlugin::default())
+  let mut app: App = App::new();
+
+  add_phase!(app, GamePhase, GamePhase::Start,
+      start => [ setup ],
+      run => [ start_game ],
+      exit => [ ]
+  );
+
+  add_phase!(app, GamePhase, GamePhase::Player,
+      start => [ ],
+      run => [ check_game_over ],
+      exit => [ ]
+  );
+
+  add_phase!(app, GamePhase, GamePhase::Cpu,
+      start => [ ],
+      run => [ cpu, check_game_over, display_score ],
+      exit => [ ]
+  );
+
+  add_phase!(app, GamePhase, GamePhase::End,
+      start => [ ],
+      run => [ end_game ],
+      exit => [ cleanup::<GameElement> ]
+  );
+
+  add_phase!(app, GamePhase, GamePhase::GameOver,
+      start => [ ],
+      run => [ display_final_score ],
+      exit => [ ]
+  );
+
+  let resolution: WindowResolution = WindowResolution::new(1024, 768);
+
+  let primary_window: Window = Window {
+    title: "Pig".into(),
+    resolution,
+    ..default()
+  };
+
+  let window_plugin = WindowPlugin {
+    primary_window: Some(primary_window),
+    ..default()
+  };
+
+  let game_state_plugin: GameStatePlugin<GamePhase> = GameStatePlugin {
+    menu_state: GamePhase::MainMenu,
+    game_start_state: GamePhase::Start,
+    game_end_state: GamePhase::GameOver,
+  };
+
+  let egui_plugin: EguiPlugin = EguiPlugin::default();
+
+  app
+    .add_plugins(DefaultPlugins.set(window_plugin))
+    .add_plugins(game_state_plugin)
+    .add_plugins(egui_plugin)
     .add_plugins(RandomPlugin)
-    .add_systems(Startup, setup)
+    // .add_systems(Startup, setup)
     .add_systems(EguiPrimaryContextPass, display_score)
     .init_state::<GamePhase>()
+    // .add_systems(EguiPrimaryContextPass, player)
     .add_systems(
       EguiPrimaryContextPass,
       player.run_if(in_state(GamePhase::Player)),
     )
-    .add_systems(Update, cpu.run_if(in_state(GamePhase::Cpu)))
+    // .add_systems(Update, cpu.run_if(in_state(GamePhase::Cpu)))
     .run();
+}
+
+fn check_game_over(
+  scores: Res<Scores>,
+  mut state: ResMut<NextState<GamePhase>>,
+) {
+  if scores.cpu >= 100 || scores.player >= 100 {
+    state.set(GamePhase::End);
+  }
 }
 
 fn clear_die(
@@ -89,20 +158,52 @@ fn cpu(
   }
 }
 
+fn display_final_score(
+  mut egui_contexts: EguiContexts,
+  scores: Res<FinalScore>,
+) {
+  let Ok(egui_context) = egui_contexts.ctx_mut() else {
+    return;
+  };
+
+  egui::Window::new("Total Scores").show(egui_context, |ui| {
+    ui.label(&format!("Player: {}", scores.0.player));
+
+    ui.label(&format!("CPU: {}", scores.0.cpu));
+
+    if scores.0.player < scores.0.cpu {
+      ui.label("CPU is the winner!");
+    } else {
+      ui.label("Player is the winner!");
+    }
+  });
+}
+
 fn display_score(
   scores: Res<Scores>,
-  mut egui_context: EguiContexts,
+  mut egui_contexts: EguiContexts,
 ) -> Result {
-  egui::Window::new("Total Scores").show(
-    egui_context.ctx_mut()?,
-    |ui: &mut egui::Ui| {
-      ui.label(format!("Player: {}", scores.player));
+  let Ok(egui_context) = egui_contexts.ctx_mut() else {
+    return Ok(());
+  };
 
-      ui.label(format!("CPU: {}", scores.cpu));
-    },
-  );
+  egui::Window::new("Total Scores").show(egui_context, |ui: &mut egui::Ui| {
+    ui.label(format!("Player: {}", scores.player));
+
+    ui.label(format!("CPU: {}", scores.cpu));
+  });
 
   Ok(())
+}
+
+fn end_game(
+  mut commands: Commands,
+  scores: Res<Scores>,
+  mut state: ResMut<NextState<GamePhase>>,
+) {
+  commands.insert_resource(FinalScore(*scores));
+
+  state.set(GamePhase::GameOver);
 }
 
 fn player(
@@ -112,44 +213,45 @@ fn player(
   assets: Res<GameAssets>,
   mut scores: ResMut<Scores>,
   mut state: ResMut<NextState<GamePhase>>,
-  mut egui_context: EguiContexts,
+  mut egui_contexts: EguiContexts,
 ) -> Result {
-  egui::Window::new("Play Options").show(
-    egui_context.ctx_mut()?,
-    |ui: &mut egui::Ui| {
-      let hand_score: usize = hand_query
+  let Ok(egui_context) = egui_contexts.ctx_mut() else {
+    return Ok(());
+  };
+
+  egui::Window::new("Play Options").show(egui_context, |ui: &mut egui::Ui| {
+    let hand_score: usize = hand_query
+      .iter()
+      .map(|(_, ts)| ts.texture_atlas.as_ref().unwrap().index + 1)
+      .sum();
+
+    ui.label(format!("Score for this hand: {hand_score}"));
+
+    if ui.button("Roll Dice").clicked() {
+      let new_roll: usize = rng.range(1..=6);
+
+      if new_roll == 1 {
+        clear_die(&hand_query, &mut commands);
+
+        state.set(GamePhase::Cpu);
+      } else {
+        spawn_die(&hand_query, &mut commands, &assets, new_roll, Color::WHITE)
+      }
+    }
+
+    if ui.button("Pass - Keep Hand Score").clicked() {
+      let hand_total: usize = hand_query
         .iter()
         .map(|(_, ts)| ts.texture_atlas.as_ref().unwrap().index + 1)
         .sum();
 
-      ui.label(format!("Score for this hand: {hand_score}"));
+      scores.player += hand_total;
 
-      if ui.button("Roll Dice").clicked() {
-        let new_roll: usize = rng.range(1..=6);
+      clear_die(&hand_query, &mut commands);
 
-        if new_roll == 1 {
-          clear_die(&hand_query, &mut commands);
-
-          state.set(GamePhase::Cpu);
-        } else {
-          spawn_die(&hand_query, &mut commands, &assets, new_roll, Color::WHITE)
-        }
-      }
-
-      if ui.button("Pass - Keep Hand Score").clicked() {
-        let hand_total: usize = hand_query
-          .iter()
-          .map(|(_, ts)| ts.texture_atlas.as_ref().unwrap().index + 1)
-          .sum();
-
-        scores.player += hand_total;
-
-        clear_die(&hand_query, &mut commands);
-
-        state.set(GamePhase::Cpu);
-      }
-    },
-  );
+      state.set(GamePhase::Cpu);
+    }
+  });
 
   Ok(())
 }
@@ -208,4 +310,8 @@ fn spawn_die(
     HandDie,
     GameElement,
   ));
+}
+
+fn start_game(mut state: ResMut<NextState<GamePhase>>) {
+  state.set(GamePhase::Player);
 }
