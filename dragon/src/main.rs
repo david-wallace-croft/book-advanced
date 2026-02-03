@@ -5,6 +5,7 @@ use self::game_phase::GamePhase;
 use self::obstacle::Obstacle;
 use ::bevy::prelude::*;
 use ::bevy::window::WindowResolution;
+use ::my_lib::add_phase;
 use ::my_lib::cleanup;
 use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
@@ -15,29 +16,6 @@ mod dragon_assets;
 mod dragon_element;
 mod game_phase;
 mod obstacle;
-
-macro_rules! add_phase {
-  (
-    $app:expr, $type:ty, $phase:expr,
-    start => [ $($start:expr),* ],
-    run => [ $($run:expr),* ],
-    exit => [ $($exit:expr),* ]
-  ) => {
-    $($app.add_systems(
-      bevy::prelude::OnEnter::<$type>($phase),
-      $start);)*
-
-    $($app.add_systems(
-      bevy::prelude::Update,
-      $run.run_if(in_state($phase))
-    );)*
-
-    $($app.add_systems(
-      bevy::prelude::OnExit::<$type>($phase),
-      $exit
-    );)*
-  }
-}
 
 fn main() {
   let resolution: WindowResolution = WindowResolution::new(1024, 768);
