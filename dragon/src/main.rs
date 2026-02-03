@@ -21,6 +21,8 @@ fn main() {
   let resolution: WindowResolution = WindowResolution::new(1024, 768);
 
   let primary_window: Option<Window> = Some(Window {
+    // position: WindowPosition::Centered(MonitorSelection::Primary),
+    position: WindowPosition::At(IVec2::new(300, 0)),
     resolution,
     title: "Flappy Dragon - Bevy Edition".to_string(),
     ..default()
