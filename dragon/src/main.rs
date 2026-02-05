@@ -6,6 +6,7 @@ use self::obstacle::Obstacle;
 use ::bevy::prelude::*;
 use ::bevy::window::WindowResolution;
 use ::my_lib::add_phase;
+use ::my_lib::bevy_assets::asset_manager::AssetManager;
 use ::my_lib::cleanup;
 use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
@@ -17,7 +18,7 @@ mod dragon_element;
 mod game_phase;
 mod obstacle;
 
-fn main() {
+fn main() -> ::anyhow::Result<()> {
   let resolution: WindowResolution = WindowResolution::new(1024, 768);
 
   let primary_window: Option<Window> = Some(Window {
@@ -44,6 +45,10 @@ fn main() {
     exit => [ cleanup::<DragonElement> ]
   );
 
+  let asset_manager = AssetManager::new()
+    .add_image("dragon", "dragon/assets/dragon-52x45.png")?
+    .add_image("wall", "dragon/assets/wall-32x32.png")?;
+
   app
     .add_plugins(DefaultPlugins.set(window_plugin))
     .add_plugins(RandomPlugin)
@@ -52,7 +57,10 @@ fn main() {
       game_start_state: GamePhase::Flapping,
       menu_state: GamePhase::MainMenu,
     })
+    .add_plugins(asset_manager)
     .run();
+
+  Ok(())
 }
 
 fn build_wall(

@@ -21,6 +21,7 @@ debug = "line-tables-only"
 members = ["bevy-hello", "dragon", "hello", "my-lib", "pig"]
 
 [workspace.dependencies]
+anyhow = "1.0.100"
 bevy = "0.18.0"
 bevy_egui = "0.39.0"
 rand = "0.9.2"

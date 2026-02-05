@@ -12,5 +12,6 @@ rust-version = "1.92"
 version = "0.0.0-SNAPSHOT"
 
 [dependencies]
+anyhow = { workspace = true }
 bevy = { workspace = true }
 my-lib = { path = "../my-lib" }

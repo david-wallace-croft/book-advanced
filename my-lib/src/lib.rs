@@ -6,6 +6,7 @@ pub mod random;
 #[cfg(feature = "locking")]
 pub mod random_locking;
 
+pub mod bevy_assets;
 pub mod game_menus;
 pub mod game_state_plugin;
 pub mod menu_assets;
