@@ -1,5 +1,4 @@
 use self::dragon::Dragon;
-use self::dragon_assets::DragonAssets;
 use self::dragon_element::DragonElement;
 use self::game_phase::GamePhase;
 use self::obstacle::Obstacle;
@@ -7,13 +6,13 @@ use ::bevy::prelude::*;
 use ::bevy::window::WindowResolution;
 use ::my_lib::add_phase;
 use ::my_lib::bevy_assets::asset_manager::AssetManager;
-use ::my_lib::cleanup;
+use ::my_lib::bevy_assets::asset_store::LoadedAssets;
+use ::my_lib::bevy_assets::asset_store::{AssetResource, AssetStore};
 use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
 
 mod dragon;
-mod dragon_assets;
 mod dragon_element;
 mod game_phase;
 mod obstacle;
@@ -42,40 +41,44 @@ fn main() -> ::anyhow::Result<()> {
     GamePhase::Flapping,
     start => [ setup ],
     run => [ gravity, flap, clamp, move_walls, hit_wall ],
-    exit => [ cleanup::<DragonElement> ]
+    exit => [ ::my_lib::cleanup::<DragonElement> ]
   );
 
-  let asset_manager = AssetManager::new()
-    .add_image("dragon", "dragon/assets/dragon-52x45.png")?
-    .add_image("wall", "dragon/assets/wall-32x32.png")?;
+  let asset_manager: AssetManager = AssetManager::new()
+    .add_image("dragon", "dragon-52x45.png")?
+    .add_image("wall", "wall-32x32.png")?;
 
   app
     .add_plugins(DefaultPlugins.set(window_plugin))
     .add_plugins(RandomPlugin)
+    .add_plugins(asset_manager)
     .add_plugins(GameStatePlugin::<GamePhase> {
       game_end_state: GamePhase::GameOver,
       game_start_state: GamePhase::Flapping,
       menu_state: GamePhase::MainMenu,
     })
-    .add_plugins(asset_manager)
     .run();
 
   Ok(())
 }
 
 fn build_wall(
+  assets: &AssetStore,
   commands: &mut Commands,
-  wall_sprite: Handle<Image>,
+  loaded_assets: &LoadedAssets,
   gap_y: isize,
 ) {
   for y in -12..=12 {
     if y < gap_y - 4 || y > gap_y + 4 {
-      commands.spawn((
-        Sprite::from_image(wall_sprite.clone()),
-        Transform::from_xyz(512., y as f32 * 32., 1.),
-        Obstacle,
-        DragonElement,
-      ));
+      commands
+        .spawn((
+          Sprite::from_image(
+            assets.get_handle("wall", &loaded_assets).unwrap(),
+          ),
+          Transform::from_xyz(512., y as f32 * 32., 1.),
+        ))
+        .insert(Obstacle)
+        .insert(DragonElement);
     }
   }
 }
@@ -129,10 +132,11 @@ fn hit_wall(
 }
 
 fn move_walls(
+  assets: Res<AssetStore>,
   mut commands: Commands,
   mut query: Query<&mut Transform, With<Obstacle>>,
   delete: Query<Entity, With<Obstacle>>,
-  assets: Res<DragonAssets>,
+  loaded_assets: AssetResource,
   #[allow(unused_mut)] mut rng: ResMut<RandomNumberGenerator>,
 ) {
   let mut rebuild: bool = false;
@@ -151,40 +155,33 @@ fn move_walls(
     }
 
     build_wall(
+      &assets,
       &mut commands,
-      assets.wall.clone(),
+      &loaded_assets,
       rng.range(-5..5) as isize,
     );
   }
 }
 
 fn setup(
+  assets: Res<AssetStore>,
   mut commands: Commands,
-  asset_server: Res<AssetServer>,
+  loaded_assets: AssetResource,
   #[allow(unused_mut)] mut rng: ResMut<RandomNumberGenerator>,
 ) {
-  let assets: DragonAssets = DragonAssets {
-    dragon: asset_server.load("dragon-52x45.png"),
-    wall: asset_server.load("wall-32x32.png"),
-  };
-
   commands.spawn(Camera2d).insert(DragonElement);
 
   commands
     .spawn((
-      Sprite::from_image(assets.dragon.clone()),
+      Sprite::from_image(assets.get_handle("dragon", &loaded_assets).unwrap()),
       Transform::from_xyz(-490., 0., 1.),
-      Dragon {
-        gravity: 0.,
-      },
     ))
+    .insert(Dragon {
+      gravity: 0.,
+    })
     .insert(DragonElement);
 
-  build_wall(
-    &mut commands,
-    assets.wall.clone(),
-    rng.range(-5..5) as isize,
-  );
+  let gap_y: isize = rng.range(-5..5) as isize;
 
-  commands.insert_resource(assets);
+  build_wall(&assets, &mut commands, &loaded_assets, gap_y);
 }

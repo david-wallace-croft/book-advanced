@@ -6,6 +6,7 @@ pub type LoadedAssets = Assets<LoadedUntypedAsset>;
 
 pub type AssetResource<'w> = Res<'w, LoadedAssets>;
 
+#[derive(Clone, Resource)]
 pub struct AssetStore {
   pub(crate) asset_index: HashMap<String, Handle<LoadedUntypedAsset>>,
 }
