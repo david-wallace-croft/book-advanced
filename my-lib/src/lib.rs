@@ -20,7 +20,9 @@ pub use random_locking as random;
 #[macro_export]
 macro_rules! add_phase {
   (
-    $app:expr, $type:ty, $phase:expr,
+    $app:expr,
+    $type:ty,
+    $phase:expr,
     start => [ $($start:expr),* ],
     run => [ $($run:expr),* ],
     exit => [ $($exit:expr),* ]
@@ -39,6 +41,30 @@ macro_rules! add_phase {
       $exit
     );)*
   }
+}
+
+#[macro_export]
+macro_rules! spawn_image {
+  (
+    $assets:expr,
+    $commands:expr,
+    $index:expr,
+    $x:expr,
+    $y:expr,
+    $z:expr,
+    $resource:expr,
+    $($component:expr),*
+  ) => {
+    $commands.spawn((
+      ::bevy::prelude::Sprite::from_image(
+        $assets.get_handle($index, $resource).unwrap()
+      ),
+      ::bevy::prelude::Transform::from_xyz($x, $y, $z),
+    ))
+    $(
+      .insert($component)
+    )*
+  };
 }
 
 pub fn cleanup<T>(

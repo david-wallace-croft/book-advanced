@@ -11,6 +11,7 @@ use ::my_lib::bevy_assets::asset_store::{AssetResource, AssetStore};
 use ::my_lib::game_state_plugin::GameStatePlugin;
 use ::my_lib::random::RandomNumberGenerator;
 use ::my_lib::random_plugin::RandomPlugin;
+use ::my_lib::spawn_image;
 
 mod dragon;
 mod dragon_element;
@@ -70,15 +71,17 @@ fn build_wall(
 ) {
   for y in -12..=12 {
     if y < gap_y - 4 || y > gap_y + 4 {
-      commands
-        .spawn((
-          Sprite::from_image(
-            assets.get_handle("wall", &loaded_assets).unwrap(),
-          ),
-          Transform::from_xyz(512., y as f32 * 32., 1.),
-        ))
-        .insert(Obstacle)
-        .insert(DragonElement);
+      spawn_image!(
+        assets,
+        commands,
+        "wall",
+        512.,
+        y as f32 * 32.,
+        1.,
+        &loaded_assets,
+        Obstacle,
+        DragonElement
+      );
     }
   }
 }
@@ -171,15 +174,21 @@ fn setup(
 ) {
   commands.spawn(Camera2d).insert(DragonElement);
 
-  commands
-    .spawn((
-      Sprite::from_image(assets.get_handle("dragon", &loaded_assets).unwrap()),
-      Transform::from_xyz(-490., 0., 1.),
-    ))
-    .insert(Dragon {
-      gravity: 0.,
-    })
-    .insert(DragonElement);
+  let dragon: Dragon = Dragon {
+    gravity: 0.,
+  };
+
+  spawn_image!(
+    assets,
+    commands,
+    "dragon",
+    -490.,
+    0.,
+    1.,
+    &loaded_assets,
+    dragon,
+    DragonElement
+  );
 
   let gap_y: isize = rng.range(-5..5) as isize;
 
