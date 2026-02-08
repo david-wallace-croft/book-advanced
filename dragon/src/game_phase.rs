@@ -5,5 +5,6 @@ pub enum GamePhase {
   Flapping,
   GameOver,
   #[default]
+  Loading,
   MainMenu,
 }
