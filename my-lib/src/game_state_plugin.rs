@@ -1,3 +1,4 @@
+use super::bevy_assets::loading_menu;
 use super::cleanup;
 use super::game_menus;
 use super::menu_assets;
@@ -14,7 +15,7 @@ pub struct GameStatePlugin<T> {
 
 impl<T> Plugin for GameStatePlugin<T>
 where
-  T: Copy + FreelyMutableState + FromWorld + States,
+  T: Copy + Default + FreelyMutableState + FromWorld + States,
 {
   fn build(
     &self,
@@ -49,5 +50,12 @@ where
     );
 
     app.add_systems(OnExit(self.game_end_state), cleanup::<MenuElement>);
+
+    app.add_systems(
+      Update,
+      loading_menu::run::<T>.run_if(in_state(T::default())),
+    );
+
+    app.add_systems(OnExit(T::default()), loading_menu::exit::<T>);
   }
 }
