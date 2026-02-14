@@ -1,12 +1,12 @@
 # Book Advanced
 
 [![MIT licensed][mit-badge]][mit-url]
-[![Rust][rust-badge]][rust-url]
+[![CI][ci-badge]][ci-url]
 
+[ci-badge]: https://github.com/david-wallace-croft/book-advanced/actions/workflows/ci.yaml/badge.svg
+[ci-url]: https://github.com/david-wallace-croft/book-advanced/actions/workflows/ci.yaml
 [mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [mit-url]: https://github.com/david-wallace-croft/book-advanced/blob/main/LICENSE.txt
-[rust-badge]: https://github.com/david-wallace-croft/book-advanced/actions/workflows/rust.yml/badge.svg
-[rust-url]: https://github.com/david-wallace-croft/book-advanced/actions/workflows/rust.yml
 
 - Code adapted from the book "Advanced Hands-on Rust" by Herbert Wolverson
   - [https://pragprog.com/titles/hwmrust/advanced-hands-on-rust/](
