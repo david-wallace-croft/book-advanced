@@ -5,18 +5,12 @@ use ::bevy::prelude::*;
 // use ::std::env;
 // use ::std::path::PathBuf;
 
-#[derive(Clone, Resource)]
+#[derive(Clone, Default, Resource)]
 pub struct AssetManager {
   asset_list: Vec<(String, String, AssetType)>,
 }
 
 impl AssetManager {
-  pub fn new() -> Self {
-    Self {
-      asset_list: Vec::new(),
-    }
-  }
-
   pub fn add_image<S: ToString>(
     mut self,
     tag: S,
@@ -67,6 +61,7 @@ fn setup(
     asset_index: HashMap::new(),
   };
 
+  #[expect(clippy::match_single_binding)]
   asset_resource
     .asset_list
     .iter()

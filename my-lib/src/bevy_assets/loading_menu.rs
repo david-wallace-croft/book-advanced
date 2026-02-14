@@ -4,6 +4,7 @@ use ::bevy::state::state::FreelyMutableState;
 
 #[expect(unused_mut)]
 #[expect(unused_variables)]
+#[expect(clippy::extra_unused_type_parameters)]
 pub(crate) fn exit<T>(mut commands: Commands) {
   println!("loading_menu::exit()");
   // TODO

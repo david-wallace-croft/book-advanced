@@ -55,7 +55,7 @@ pub fn setup<T>(
     }
   };
 
-  commands.spawn(Camera2d::default()).insert(MenuElement);
+  commands.spawn(Camera2d).insert(MenuElement);
 
   commands
     .spawn((

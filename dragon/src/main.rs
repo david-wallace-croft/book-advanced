@@ -45,7 +45,7 @@ fn main() -> ::anyhow::Result<()> {
     exit => [ ::my_lib::cleanup::<DragonElement> ]
   );
 
-  let asset_manager: AssetManager = AssetManager::new()
+  let asset_manager: AssetManager = AssetManager::default()
     .add_image("dragon", "dragon-52x45.png")?
     .add_image("wall", "wall-32x32.png")?;
 

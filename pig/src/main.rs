@@ -167,9 +167,9 @@ fn display_final_score(
   };
 
   egui::Window::new("Total Scores").show(egui_context, |ui| {
-    ui.label(&format!("Player: {}", scores.0.player));
+    ui.label(format!("Player: {}", scores.0.player));
 
-    ui.label(&format!("CPU: {}", scores.0.cpu));
+    ui.label(format!("CPU: {}", scores.0.cpu));
 
     if scores.0.player < scores.0.cpu {
       ui.label("CPU is the winner!");

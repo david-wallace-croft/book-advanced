@@ -1,4 +1,4 @@
-# Derived from https://github.com/bevyengine/bevy_github_ci_template/
+# Adapted from https://github.com/bevyengine/bevy_github_ci_template/
 
 name: CI
 
@@ -12,7 +12,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # Run cargo test
+  # Run cargo test --all
   test:
     name: Test Suite
     runs-on: ubuntu-latest
@@ -35,9 +35,9 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
       - name: Run cargo test
-        run: cargo test
+        run: cargo test --all
 
-  # Run cargo clippy -- -D warnings
+  # Run cargo clippy --all -- -D warnings
   clippy_check:
     name: Clippy
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev libwayland-dev
       - name: Run clippy
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all -- -D warnings
 
   # Run cargo fmt --all -- --check
   format:
