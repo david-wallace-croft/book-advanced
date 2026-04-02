@@ -1,10 +1,11 @@
 use ::bevy::prelude::*;
-use ::rand::Rng;
+use ::rand::RngExt;
 use ::rand::SeedableRng;
 use ::rand::distr::Distribution;
 use ::rand::distr::StandardUniform;
 use ::rand::distr::uniform::SampleRange;
 use ::rand::distr::uniform::SampleUniform;
+use ::rand::rngs::SysRng;
 
 #[cfg(
   all(
@@ -53,7 +54,7 @@ impl RandomNumberGenerator {
 impl Default for RandomNumberGenerator {
   fn default() -> Self {
     Self {
-      rng: RngCore::from_os_rng(),
+      rng: RngCore::try_from_rng(&mut SysRng).unwrap(),
     }
   }
 }

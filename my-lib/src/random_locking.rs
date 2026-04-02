@@ -1,10 +1,11 @@
 use ::bevy::prelude::*;
-use ::rand::Rng;
+use ::rand::RngExt;
 use ::rand::SeedableRng;
 use ::rand::distr::Distribution;
 use ::rand::distr::StandardUniform;
 use ::rand::distr::uniform::SampleRange;
 use ::rand::distr::uniform::SampleUniform;
+use ::rand::rngs::SysRng;
 use ::std::sync::Mutex;
 
 #[cfg(
@@ -54,7 +55,7 @@ impl RandomNumberGenerator {
 impl Default for RandomNumberGenerator {
   fn default() -> Self {
     Self {
-      rng: Mutex::new(RngCore::from_os_rng()),
+      rng: Mutex::new(RngCore::try_from_rng(&mut SysRng).unwrap()),
     }
   }
 }
