@@ -1,11 +1,11 @@
-use ::criterion::{Criterion, criterion_group, criterion_main};
+use ::criterion::{Bencher, Criterion, criterion_group, criterion_main};
 use ::my_lib::random::RandomNumberGenerator;
 
-pub fn criterion_benchmark(c: &mut Criterion) {
-  c.bench_function("random", |b| {
+pub fn criterion_benchmark(criterion: &mut Criterion) {
+  criterion.bench_function("random", |bencher: &mut Bencher<'_>| {
     let mut rng: RandomNumberGenerator = Default::default();
 
-    b.iter(|| rng.range(1_f32..10_000_000_f32))
+    bencher.iter(move || rng.range(1_f32..10_000_000_f32))
   });
 }
 
