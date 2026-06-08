@@ -8,7 +8,7 @@ name = "book-advanced"
 publish = false
 readme = "README.md"
 repository = "https://github.com/david-wallace-croft/book-advanced"
-rust-version = "1.93"
+rust-version = "1.95"
 version = "0.0.0-SNAPSHOT"
 
 [dependencies]
@@ -24,6 +24,6 @@ members = ["bevy-hello", "dragon", "hello", "my-lib", "pig"]
 anyhow = "1.0.102"
 bevy = "0.18.1"
 bevy_egui = "0.39.1"
-rand = "0.10.0"
-rand_pcg = "0.10.1"
+rand = "0.10.1"
+rand_pcg = "0.10.2"
 rand_xorshift = "0.5.0"
